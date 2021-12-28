@@ -1,6 +1,6 @@
+use advent::utils::Lines;
 use std::env;
 use std::error::Error;
-use advent::utils::Lines;
 
 /// Loop over all arguments and process each one as a file.
 fn main() -> Result<(), Box<dyn Error>> {

@@ -1,9 +1,9 @@
 //// Library of utilities for the advent of code, 2021.
 
 pub mod utils {
+    use std::error::Error;
     use std::fs::File;
     use std::io::{BufRead, BufReader};
-    use std::error::Error;
 
     pub struct Lines {
         reader: BufReader<File>,
