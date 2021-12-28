@@ -1,8 +1,6 @@
-use advent::utils::fgets;
+use advent::utils::Lines;
 use std::env;
 use std::error::Error;
-use std::fs::File;
-use std::io::BufReader;
 
 enum Dir {
     Forward(i32),
@@ -35,11 +33,10 @@ fn parse(line: &str) -> Dir {
     Dir::Down(amount)
 }
 fn part1(name: &str) -> Result<(), Box<dyn Error>> {
-    let mut reader = BufReader::new(File::open(name)?);
-    let mut line = String::new();
     let (mut h, mut v) = (0i32, 0i32);
-    while fgets(&mut reader, &mut line) {
-        match parse(&line) {
+    let mut l = Lines::new(name)?;
+    while l.more() {
+        match parse(l.get()) {
             Dir::Up(d) => h -= d,
             Dir::Down(d) => h += d,
             Dir::Forward(d) => v += d,

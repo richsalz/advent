@@ -1,9 +1,6 @@
-extern crate advent;
-use advent::utils::fgets;
 use std::env;
 use std::error::Error;
-use std::fs::File;
-use std::io::BufReader;
+use advent::utils::Lines;
 
 /// Loop over all arguments and process each one as a file.
 fn main() -> Result<(), Box<dyn Error>> {
@@ -21,13 +18,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// value and continue.  At EOF, print the filename and total number
 /// of increases found.
 fn part1(name: &str) -> Result<(), Box<dyn Error>> {
-    let mut reader = BufReader::new(File::open(name)?);
-    let mut line = String::new();
-    fgets(&mut reader, &mut line);
-    let mut curr: u32 = line.parse()?;
+    let mut l = Lines::new(name)?;
+    l.more();
+    let mut curr: u32 = l.get().parse()?;
     let mut count = 0u32;
-    while fgets(&mut reader, &mut line) {
-        let next: u32 = line.parse()?;
+    while l.more() {
+        let next: u32 = l.get().parse()?;
         if next > curr {
             count += 1;
         }
@@ -38,12 +34,11 @@ fn part1(name: &str) -> Result<(), Box<dyn Error>> {
 }
 
 fn part2(name: &str) -> Result<(), Box<dyn Error>> {
-    let mut reader = BufReader::new(File::open(name)?);
-    let mut line = String::new();
+    let mut l = Lines::new(name)?;
     let mut numbers: Vec<u32> = Vec::new();
     // Create a vector of numbers based on the file contents.
-    while fgets(&mut reader, &mut line) {
-        let curr = line.parse()?;
+    while l.more() {
+        let curr = l.get().parse()?;
         numbers.push(curr);
     }
     let mut triples: Vec<u32> = Vec::with_capacity(numbers.len() / 3 + 1);
