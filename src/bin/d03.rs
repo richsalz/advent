@@ -24,7 +24,8 @@ fn readit(name: &str) -> Result<(Vec<usize>, usize), Box<dyn Error>> {
     Ok((values, length))
 }
 
-/// Count the numbers of 1 and 0 at bit position `bit` in vector `values`
+/// Count the numbers of 1's and 0's at bit position `bit` in each element
+/// of the vector `values`
 fn count(bit: usize, values: &Vec<usize>) -> (usize, usize) {
     let (mut ones, mut zeros) = (0, 0);
     for v in values {
@@ -37,51 +38,54 @@ fn count(bit: usize, values: &Vec<usize>) -> (usize, usize) {
     (ones, zeros)
 }
 
+/// Part1
 fn part1(name: &str) -> Result<(), Box<dyn Error>> {
     let (values, length) = readit(name)?;
 
     // Now scan down the columns.
-    let (mut gamma, mut epsilon) = (0i32, 0i32);
+    let (mut gam, mut eps) = (0i32, 0i32);
     for b in (0..length).rev() {
         let (ones, zeros) = count(1 << b, &values);
-        gamma *= 2;
-        epsilon *= 2;
+        gam *= 2;
+        eps *= 2;
         if ones > zeros {
-            gamma += 1;
+            gam += 1;
         } else {
-            epsilon += 1;
+            eps += 1;
         }
     }
 
-    println!(
-        "part1 gamma {} * epsilon {} = {}",
-        gamma,
-        epsilon,
-        gamma * epsilon
-    );
+    println!("part1 gam {} * eps {} = {}", gam, eps, gam * eps);
     Ok(())
+}
+
+/// Filter the `values` (each of `length` bits) looking at each bit in turn.
+/// Remove those that don't match the `result` value.
+fn filter(
+    values: &Vec<usize>,
+    length: usize,
+    result: &dyn Fn(usize, usize, usize) -> usize,
+) -> usize {
+    let mut values = values.clone();
+    for b in (0..length).rev() {
+        if values.len() == 1 {
+            break;
+        }
+        let bit = 1 << b;
+        let (ones, zeros) = count(bit, &values);
+        let wanted = result(ones, zeros, bit); //if ones >= zeros { bit } else { 0 };
+        values.retain(|&v| v & bit == wanted);
+    }
+    values[0]
 }
 
 fn part2(name: &str) -> Result<(), Box<dyn Error>> {
     let (values, length) = readit(name)?;
-    let mut oxy = values.clone();
-    let mut scrub = values.clone();
-    for b in (0..length).rev() {
-        if oxy.len() == 1 && scrub.len() == 1 {
-            break;
-        }
-        let bit = 1 << b;
-        if oxy.len() > 1 {
-            let (ones, zeros) = count(bit, &oxy);
-            let wanted = if ones >= zeros { bit } else { 0 };
-            oxy.retain(|&v| v & bit == wanted);
-        }
-        if scrub.len() > 1 {
-            let (ones, zeros) = count(bit, &scrub);
-            let wanted = if zeros <= ones { 0 } else { bit };
-            scrub.retain(|&v| v & bit == wanted);
-        }
-    }
-    println!("{} {}", oxy[0], scrub[0]);
+    let most = |ones: usize, zeros: usize, bit: usize| if ones >= zeros { bit } else { 0 };
+    let least = |ones: usize, zeros: usize, bit: usize| if zeros <= ones { 0 } else { bit };
+    let oxy = filter(&values, length, &most);
+    let co2 = filter(&values, length, &least);
+
+    println!("oxy {} co2 {} product {}", oxy, co2, oxy * co2);
     Ok(())
 }
