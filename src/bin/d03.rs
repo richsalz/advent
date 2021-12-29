@@ -11,29 +11,39 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn part1(name: &str) -> Result<(), Box<dyn Error>> {
-    // Read each line, store its value; also the line length.
-    let mut values: Vec<isize> = Vec::new();
-    let mut length = 0;
+// Read the file `name` and return a vector of numbers and the line length.
+fn readit(name: &str) -> Result<(Vec<usize>, usize), Box<dyn Error>> {
+    let mut values: Vec<usize> = Vec::new();
+    let mut length: usize = 0;
     let mut l = Lines::new(name)?;
     while l.more() {
         let text = l.get();
         length = text.len();
-        values.push(isize::from_str_radix(text, 2)?);
+        values.push(usize::from_str_radix(text, 2)?);
     }
+    Ok((values, length))
+}
+
+/// Count the numbers of 1 and 0 at bit position `bit` in vector `values`
+fn count(bit: usize, values: &Vec<usize>) -> (usize, usize) {
+    let (mut ones, mut zeros) = (0, 0);
+    for v in values {
+        if *v & bit == bit {
+            ones += 1;
+        } else {
+            zeros += 1;
+        }
+    }
+    (ones, zeros)
+}
+
+fn part1(name: &str) -> Result<(), Box<dyn Error>> {
+    let (values, length) = readit(name)?;
 
     // Now scan down the columns.
     let (mut gamma, mut epsilon) = (0i32, 0i32);
-    for i in 0..length {
-        let b = length - i - 1;
-        let (mut ones, mut zeros) = (0, 0);
-        for v in &values {
-            if *v & (1 << b) != 0 {
-                ones += 1;
-            } else {
-                zeros += 1;
-            }
-        }
+    for b in (0..length).rev() {
+        let (ones, zeros) = count(1 << b, &values);
         gamma *= 2;
         epsilon *= 2;
         if ones > zeros {
@@ -43,13 +53,35 @@ fn part1(name: &str) -> Result<(), Box<dyn Error>> {
         }
     }
 
-    println!("part1 gamma {} * epsilon {} = {}", gamma, epsilon, gamma * epsilon);
+    println!(
+        "part1 gamma {} * epsilon {} = {}",
+        gamma,
+        epsilon,
+        gamma * epsilon
+    );
     Ok(())
 }
 
 fn part2(name: &str) -> Result<(), Box<dyn Error>> {
-    let mut l = Lines::new(name)?;
-    while l.more() {
+    let (values, length) = readit(name)?;
+    let mut oxy = values.clone();
+    let mut scrub = values.clone();
+    for b in (0..length).rev() {
+        if oxy.len() == 1 && scrub.len() == 1 {
+            break;
+        }
+        let bit = 1 << b;
+        if oxy.len() > 1 {
+            let (ones, zeros) = count(bit, &oxy);
+            let wanted = if ones >= zeros { bit } else { 0 };
+            oxy.retain(|&v| v & bit == wanted);
+        }
+        if scrub.len() > 1 {
+            let (ones, zeros) = count(bit, &scrub);
+            let wanted = if zeros <= ones { 0 } else { bit };
+            scrub.retain(|&v| v & bit == wanted);
+        }
     }
+    println!("{} {}", oxy[0], scrub[0]);
     Ok(())
 }
