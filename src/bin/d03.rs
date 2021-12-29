@@ -15,7 +15,6 @@ fn part1(name: &str) -> Result<(), Box<dyn Error>> {
     // Read each line, store its value; also the line length.
     let mut values: Vec<isize> = Vec::new();
     let mut length = 0;
-
     let mut l = Lines::new(name)?;
     while l.more() {
         let text = l.get();
@@ -30,10 +29,8 @@ fn part1(name: &str) -> Result<(), Box<dyn Error>> {
         let (mut ones, mut zeros) = (0, 0);
         for v in &values {
             if *v & (1 << b) != 0 {
-                println!("bit {} value {} set", b, *v);
                 ones += 1;
             } else {
-                println!("bit {} value {} unset", b, *v);
                 zeros += 1;
             }
         }
