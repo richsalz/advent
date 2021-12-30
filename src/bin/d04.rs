@@ -42,8 +42,11 @@ impl Board {
         self.winner
     }
 
-    fn five(self: &Self, spots: &Vec<usize>) -> bool {
-        spots.iter().find(|&s| !self.picked[*s]).is_none()
+    fn five(self: &Self, i: (usize, usize, usize, usize, usize)) -> bool {
+        [i.0, i.1, i.2, i.3, i.4]
+            .iter()
+            .find(|&s| !self.picked[*s])
+            .is_none()
     }
 
     /// See if we won.
@@ -51,24 +54,19 @@ impl Board {
         if self.winner {
             return true;
         }
-        for row in 0..5 {
-            let start: usize = row * 5;
-            let r: Vec<usize> = vec![start, start + 1, start + 2, start + 3, start + 4];
-            if self.five(&r) {
+        for row in [0, 5, 10, 15, 20] {
+            if self.five((row, row + 1, row + 2, row + 3, row + 4)) {
                 self.winner = true;
                 return true;
             }
         }
         for col in 0..5 {
-            let items: Vec<usize> = vec![col, col + 5, col + 10, col + 15, col + 20];
-            if self.five(&items) {
+            if self.five((col, col + 5, col + 10, col + 15, col + 20)) {
                 self.winner = true;
                 return true;
             }
         }
-        let diag1: Vec<usize> = vec![0, 6, 12, 18, 24];
-        let diag2: Vec<usize> = vec![4, 8, 12, 16, 20];
-        if self.five(&diag1) || self.five(&diag2) {
+        if self.five((0, 6, 12, 18, 24)) || self.five((4, 8, 12, 16, 20)) {
             self.winner = true;
             return true;
         }
