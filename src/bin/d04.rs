@@ -3,27 +3,24 @@ use std::env;
 use std::error::Error;
 use std::str::FromStr;
 
+/// The board.  Since it is fixed (5x5) size, just use flattened vectors.
 #[derive(Debug)]
 struct Board {
-    pub values: Vec<u8>,
-    pub picked: Vec<bool>,
-    pub winner: bool,
-}
-
-fn main() -> Result<(), Box<dyn Error>> {
-    for input in env::args().skip(1) {
-        part1(&input)?;
-        //        part2(&input)?;
-    }
-    Ok(())
+    /// The values of the squares on the board.
+    values: Vec<u8>,
+    /// True/false if this number was called.
+    called: Vec<bool>,
+    /// Did we win?
+    winner: bool,
 }
 
 impl Board {
+    /// Constructor, read board from file `l`  Boards start with a blank line.
     pub fn new(l: &mut Lines) -> Result<Self, Box<dyn Error>> {
         l.more(); // skip blank line before board
         let mut b = Board {
             values: vec![0; 25],
-            picked: vec![false; 25],
+            called: vec![false; 25],
             winner: false,
         };
         let mut i: usize = 0;
@@ -38,18 +35,24 @@ impl Board {
         Ok(b)
     }
 
+    /// Is this board a winner?
     pub fn won(self: &Self) -> bool {
         self.winner
     }
 
+    /// Are all of the squares specified by `i` called? We do this by trying to find
+    /// a square that has *not* been called. If we don't find one, those squares are
+    /// a winner.
     fn five(self: &Self, i: (usize, usize, usize, usize, usize)) -> bool {
         [i.0, i.1, i.2, i.3, i.4]
             .iter()
-            .find(|&s| !self.picked[*s])
+            .find(|&s| !self.called[*s])
             .is_none()
     }
 
-    /// See if we won.
+    /// See if we won. Check all rows then all columns, then the diagonals.
+    /// Yes, I wrote a 5x5 square on paper to figure out what the diagonal
+    /// values should be.
     pub fn check(self: &mut Self) -> bool {
         if self.winner {
             return true;
@@ -73,26 +76,36 @@ impl Board {
         false
     }
 
-    pub fn picked(self: &mut Self, number: u8) {
-        let x: Vec<usize> = self
+    /// Set that the number `number` was called.  The `hits` variable
+    /// becomes a vector of all indices where the number matches.
+    /// Then use that to check for only one hit, and mark it as called.
+    pub fn call(self: &mut Self, number: u8) {
+        let hits: Vec<usize> = self
             .values
             .iter()
             .enumerate()
             .filter(|(_i, num)| **num == number)
             .map(|(i, _)| i)
             .collect();
-        println! {"picked {} len {} vec = {:#?}", number, x.len(), x};
-        match x.len() {
+        match hits.len() {
             0 => {}
             1 => {
-                self.picked[x[0]] = true;
+                self.called[hits[0]] = true;
                 self.check();
             }
             _ => {
-                println! {"multi-match {:?}", x};
+                eprintln! {"multi-match {:?}", hits};
             }
         }
     }
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    for input in env::args().skip(1) {
+        part1(&input)?;
+        //        part2(&input)?;
+    }
+    Ok(())
 }
 
 fn part1(name: &str) -> Result<(), Box<dyn Error>> {
@@ -101,7 +114,7 @@ fn part1(name: &str) -> Result<(), Box<dyn Error>> {
     let _moves = l.get();
     let mut b = Board::new(&mut l)?;
     println! {"{:#?}", b};
-    b.picked(17);
+    b.call(17);
     if b.won() {
         println! {"you won!"};
     }
