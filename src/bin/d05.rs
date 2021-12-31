@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn part1(input: &str) -> Result<(), Box<dyn Error>> {
     let mut l = Lines::new(input)?;
-    let mut grid = [[0usize; 10]; 10];
+    let mut grid = vec![vec![0u8; 10]; 10];
 
     while l.more() {
         let s = l.get();
@@ -25,38 +25,41 @@ fn part1(input: &str) -> Result<(), Box<dyn Error>> {
         }
         println!("parsed {:?}", parsed);
         if x1 == x2 {
-            if y1 > y2 {
-                for y in y2..=y1 {
-                    grid[x1][y] += 1;
-                }
-            } else if y2 > x1 {
+            if y1 == y2 {
+                grid[x1][y1] += 1;
+                continue;
+            }
+            if y1 < y2 {
                 for y in y1..=y2 {
                     grid[x1][y] += 1;
                 }
             } else {
-                grid[x1][y1] += 1
-            }
-        } else if y1 == y2 {
-            if x1 > x2 {
-                for x in x2..=x1 {
-                    grid[y1][x] += 1;
+                for y in y2..=y1 {
+                    grid[x1][y] += 1;
                 }
-            } else if x2 > x1 {
+            }
+        } else {
+            if x1 < x2 {
                 for x in x1..=x2 {
-                    grid[x1][x] += 1;
+                    grid[x][y1] += 1;
                 }
             } else {
-                grid[x1][y1] += 1
+                for x in x2..=x1 {
+                    grid[x][y1] += 1;
+                }
             }
-        }
-            
+        }            
     }
+
     for i in 0..10 {
         println!("{}: {:?}", i, grid[i]);
     }
+    for row in &grid {
+        println!("{:?}", *row);
+    }
     let mut sum = 0;
-    for i in 0..10 {
-        sum += grid[i].iter().filter(|&&y| grid[i][y] > 1).count();
+    for row in grid {
+        sum += row.iter().filter(|&&y| y > 1).count();
     }
     println!("sum {}", sum);
     Ok(())
