@@ -17,7 +17,6 @@ struct Board {
 impl Board {
     /// Constructor, read board from file `l`  Boards start with a blank line.
     pub fn new(l: &mut Lines) -> Result<Self, Box<dyn Error>> {
-        l.more(); // skip blank line before board
         let mut b = Board {
             values: vec![0; 25],
             called: vec![false; 25],
@@ -120,18 +119,18 @@ fn part1(name: &str) -> Result<(), Box<dyn Error>> {
     for n in l.get().split(',') {
         moves.push(u8::from_str(n)?);
     }
-    let mut boards: Vec<Board> = Vec::with_capacity(3);
-    for _ in [0, 1, 2] {
+    let mut boards: Vec<Board> = Vec::new();
+    while l.more() {
         boards.push(Board::new(&mut l)?);
     }
 
     for m in moves {
         println!("calling {}", m);
-        for i in [2] {
+        for i in 0..boards.len() {
             boards[i].call(m);
             if boards[i].won() {
-                println!("Board {} wins!", i);
-                println!("{} * score {} = {}", m, boards[i].score(), boards[i].score()*(m as i32));
+                let score = boards[i].score();
+                println!("{} * score {} = {}", m, score, score * (m as i32));
                 return Ok(());
             }
         }
