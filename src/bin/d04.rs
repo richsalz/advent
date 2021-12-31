@@ -31,7 +31,6 @@ impl Board {
                 i += 1;
             }
         }
-        println! {"{:#?}", b.values}
         Ok(b)
     }
 
@@ -40,19 +39,19 @@ impl Board {
         self.winner
     }
 
-    /// Are all of the squares specified by `i` called? We do this by trying to find
-    /// a square that has *not* been called. If we don't find one, those squares are
-    /// a winner.
+    /// Have all of the squares specified by the five-element tuple
+    /// `i` been called?
     fn five(self: &Self, i: (usize, usize, usize, usize, usize)) -> bool {
-        [i.0, i.1, i.2, i.3, i.4]
-            .iter()
-            .find(|&s| !self.called[*s])
-            .is_none()
+        self.called[i.0]
+            && self.called[i.1]
+            && self.called[i.2]
+            && self.called[i.3]
+            && self.called[i.4]
     }
 
     /// See if we won. Check all rows then all columns, then the diagonals.
     /// Yes, I wrote a 5x5 square on paper to figure out what the diagonal
-    /// values should be.
+    /// values should be.  
     pub fn check(self: &mut Self) -> bool {
         if self.winner {
             return true;
@@ -69,10 +68,12 @@ impl Board {
                 return true;
             }
         }
-        if self.five((0, 6, 12, 18, 24)) || self.five((4, 8, 12, 16, 20)) {
-            self.winner = true;
-            return true;
-        }
+    // I lost about a day (elapsed time) because I missed the line that said
+    // diagonals don't count!!
+    //    if self.five((0, 6, 12, 18, 24)) || self.five((4, 8, 12, 16, 20)) {
+    //          self.winner = true;
+    //          return true;
+    //     }
         false
     }
 
@@ -94,7 +95,7 @@ impl Board {
                 self.check();
             }
             _ => {
-                eprintln! {"multi-match {:?}", hits};
+                eprintln!("multi-match {:?}", hits);
             }
         }
     }
@@ -111,13 +112,24 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn part1(name: &str) -> Result<(), Box<dyn Error>> {
     let mut l = Lines::new(name)?;
     l.more();
-    let _moves = l.get();
-    let mut b = Board::new(&mut l)?;
-    println! {"{:#?}", b};
-    b.call(17);
-    if b.won() {
-        println! {"you won!"};
+    let mut moves: Vec<u8> = Vec::new();
+    for n in l.get().split(',') {
+        moves.push(u8::from_str(n)?);
     }
-    println! {"{:#?}", b};
+    let mut boards: Vec<Board> = Vec::with_capacity(3);
+    for _ in [0, 1, 2] {
+        boards.push(Board::new(&mut l)?);
+    }
+
+    for m in moves {
+        println!("calling {}", m);
+        for i in [2] {
+            boards[i].call(m);
+            if boards[i].won() {
+                println!("Board {} wins!", i);
+                return Ok(());
+            }
+        }
+    }
     Ok(())
 }
