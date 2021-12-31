@@ -7,23 +7,38 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for input in env::args().skip(1) {
         part1(&input)?;
-        //part2(&input)?;
+        part2(&input)?;
     }
     Ok(())
 }
 
-fn part1(input: &str) -> Result<(), Box<dyn Error>> {
+fn common(input: &str, diagonals: bool) -> Result<(), Box<dyn Error>> {
     let mut l = Lines::new(input)?;
     let mut grid = vec![vec![0u8; 1000]; 1000];
 
     while l.more() {
         let s = l.get();
         let parsed = sscanf::scanf!(s, "{},{} -> {},{}", usize, usize, usize, usize);
-        let (x1, y1, x2, y2) = parsed.unwrap();
+        let (mut x1, mut y1, x2, y2) = parsed.unwrap();
         if x1 != x2 && y1 != y2 {
+            // Skip if not doing diagonals.
+            if !diagonals {
+                continue;
+            }
+            let xdiff: isize = (x1 as isize) - (x2 as isize);
+            let ydiff: isize = (y1 as isize) - (y2 as isize);
+            if xdiff.abs() != ydiff.abs() {
+                // Not a proper 45 degree diagnonal, skip.
+                continue;
+            }
+            grid[y1][x1] += 1;
+            while x1 != x2 && y1 != y2 {
+                if x1 < x2 { x1 += 1; } else if x1 > x2 { x1 -= 1; };
+                if y1 < y2 { y1 += 1; } else if y1 > y2 { y1 -= 1; };
+                grid[y1][x1] += 1;
+            }
             continue;
         }
-        println!("parsed {:?}", parsed);
         if x1 == x2 {
             if y1 == y2 {
                 grid[y1][x1] += 1;
@@ -60,4 +75,12 @@ fn part1(input: &str) -> Result<(), Box<dyn Error>> {
     }
     println!("sum {}", sum);
     Ok(())
+}
+
+fn part1(input: &str) -> Result<(), Box<dyn Error>> {
+    common(input, false)
+}
+
+fn part2(input: &str) -> Result<(), Box<dyn Error>> {
+    common(input, true)
 }
