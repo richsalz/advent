@@ -39,14 +39,18 @@ impl Board {
         self.winner
     }
 
-    /// Have all of the squares specified by the five-element tuple
-    /// `i` been called?
-    fn five(self: &Self, i: (usize, usize, usize, usize, usize)) -> bool {
-        self.called[i.0]
-            && self.called[i.1]
-            && self.called[i.2]
-            && self.called[i.3]
-            && self.called[i.4]
+    /// Have all of the squares specified by the five squares
+    /// `i0` through `i4` been called?
+    fn five(self: &Self, i0: usize, i1: usize, i2: usize, i3: usize, i4: usize) -> bool {
+        self.called[i0]
+            && self.called[i1]
+            && self.called[i2]
+            && self.called[i3]
+            && self.called[i4]
+    }
+
+    pub fn score(self: &Self) -> i32 {
+        (0..25).map(|i| if self.called[i] { 0i32 } else { self.values[i] as i32 }).sum()
     }
 
     /// See if we won. Check all rows then all columns, then the diagonals.
@@ -57,20 +61,20 @@ impl Board {
             return true;
         }
         for row in [0, 5, 10, 15, 20] {
-            if self.five((row, row + 1, row + 2, row + 3, row + 4)) {
+            if self.five(row, row + 1, row + 2, row + 3, row + 4) {
                 self.winner = true;
                 return true;
             }
         }
         for col in 0..5 {
-            if self.five((col, col + 5, col + 10, col + 15, col + 20)) {
+            if self.five(col, col + 5, col + 10, col + 15, col + 20) {
                 self.winner = true;
                 return true;
             }
         }
     // I lost about a day (elapsed time) because I missed the line that said
     // diagonals don't count!!
-    //    if self.five((0, 6, 12, 18, 24)) || self.five((4, 8, 12, 16, 20)) {
+    //    if self.five(0, 6, 12, 18, 24) || self.five(4, 8, 12, 16, 20) {
     //          self.winner = true;
     //          return true;
     //     }
@@ -127,6 +131,7 @@ fn part1(name: &str) -> Result<(), Box<dyn Error>> {
             boards[i].call(m);
             if boards[i].won() {
                 println!("Board {} wins!", i);
+                println!("{} * score {} = {}", m, boards[i].score(), boards[i].score()*(m as i32));
                 return Ok(());
             }
         }
