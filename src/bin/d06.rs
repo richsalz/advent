@@ -1,7 +1,7 @@
 use advent::utils::Lines;
 use std::env;
-use std::str::FromStr;
 use std::error::Error;
+use std::str::FromStr;
 
 /// Loop over all arguments and process each one as a file.
 fn main() -> Result<(), Box<dyn Error>> {
@@ -27,7 +27,13 @@ fn common(name: &str, days: isize) -> Result<(), Box<dyn Error>> {
     for num in l.get().split(',').map(|s| usize::from_str(s).unwrap()) {
         fish[num] += 1;
     }
-    println!("\nday {} {:?}({}) = {}", 0, fish, fish.len(), fish.iter().sum::<usize>());
+    println!(
+        "\nday {} {:?}({}) = {}",
+        0,
+        fish,
+        fish.len(),
+        fish.iter().sum::<usize>()
+    );
     for _d in 0..days {
         let new = fish.remove(0);
         fish.push(new);

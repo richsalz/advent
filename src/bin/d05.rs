@@ -1,10 +1,8 @@
-//use advent::utils::Lines;
+use advent::utils::Lines;
 use std::env;
 use std::error::Error;
-use advent::utils::Lines;
 
 fn main() -> Result<(), Box<dyn Error>> {
-
     for input in env::args().skip(1) {
         part1(&input)?;
         part2(&input)?;
@@ -33,8 +31,16 @@ fn common(input: &str, diagonals: bool) -> Result<(), Box<dyn Error>> {
             }
             grid[y1][x1] += 1;
             while x1 != x2 && y1 != y2 {
-                if x1 < x2 { x1 += 1; } else if x1 > x2 { x1 -= 1; };
-                if y1 < y2 { y1 += 1; } else if y1 > y2 { y1 -= 1; };
+                if x1 < x2 {
+                    x1 += 1;
+                } else if x1 > x2 {
+                    x1 -= 1;
+                };
+                if y1 < y2 {
+                    y1 += 1;
+                } else if y1 > y2 {
+                    y1 -= 1;
+                };
                 grid[y1][x1] += 1;
             }
             continue;
@@ -63,7 +69,7 @@ fn common(input: &str, diagonals: bool) -> Result<(), Box<dyn Error>> {
                     grid[y1][x] += 1;
                 }
             }
-        }            
+        }
     }
 
     //for row in &grid {
