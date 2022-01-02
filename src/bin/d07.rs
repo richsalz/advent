@@ -17,7 +17,7 @@ fn part1(input: &str) -> Result<(), Box<dyn Error>> {
 }
 
 fn part2(input: &str) -> Result<(), Box<dyn Error>> {
-    let cost = |distance: i32| (distance * ( distance + 1)) / 2;
+    let cost = |distance: i32| (distance * (distance + 1)) / 2;
     common(input, &cost)
 }
 
@@ -34,7 +34,7 @@ fn common(input: &str, cost: &dyn Fn(i32) -> i32) -> Result<(), Box<dyn Error>> 
     let highest = crabs[crabs.len() - 1];
     let mut pos = lowest;
     let mut fuel: i32 = crabs.iter().map(|c| cost((c - pos).abs())).sum();
-    for newpos in lowest+1..=highest {
+    for newpos in lowest + 1..=highest {
         let newfuel: i32 = crabs.iter().map(|c| cost((c - newpos).abs())).sum();
         if newfuel < fuel {
             pos = newpos;
