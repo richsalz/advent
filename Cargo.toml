@@ -24,3 +24,5 @@ name = "d06"
 name = "d07"
 [[bin]]
 name = "d08"
+[[bin]]
+name = "d09"
