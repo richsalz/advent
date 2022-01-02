@@ -16,9 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn part1(input: &str) -> Result<(), Box<dyn Error>> {
     let mut l = Lines::new(input)?;
     let mut m: Matrix = Vec::new();
-    let mut maxcols = 0;
     while l.more() {
-        maxcols = l.get().len() - 1;
         let row = l
             .get()
             .chars()
@@ -35,26 +33,33 @@ fn part1(input: &str) -> Result<(), Box<dyn Error>> {
                 _ => 0,
             })
             .collect();
-        println!("{:?}", row);
         m.push(row);
     }
-    let maxrows = m.len() - 1;
 
-    let mut risks: isize = 0;
-    let mut numrisks: isize = 0;
+    let points = findlows(&m);
+    let risks: isize = points.iter().map(|(r, c)| 1 + m[*r][*c] as isize).sum();
+    println!("numrisks {} risks = {}", points.len(), risks);
+    Ok(())
+}
+
+fn findlows(m: &Matrix) -> Vec<(usize, usize)> {
+    let mut points: Vec<(usize, usize)> = Vec::new();
+    let maxrows = m.len() - 1;
+    let maxcols = m[0].len() - 1;
     for row in 0..=maxrows {
         let top: bool = row == 0;
         let bot: bool = row == maxrows;
         for col in 0..=maxcols {
             let cell = m[row][col];
-            if !top && cell >= m[row-1][col] { continue; }
-            if !bot && cell >= m[row+1][col] { continue; }
-            if col != 0 && cell >= m[row][col-1] { continue; }
-            if col != maxcols && cell >= m[row][col+1] { continue; }
-            risks += cell as isize + 1;
-            numrisks += 1;
+            if (!top && cell >= m[row - 1][col])
+                || (!bot && cell >= m[row + 1][col])
+                || (col != 0 && cell >= m[row][col - 1])
+                || (col != maxcols && cell >= m[row][col + 1])
+            {
+                continue;
+            }
+            points.push((row, col));
         }
     }
-    println!("numrisks {} risks = {}", numrisks, risks);
-    Ok(())
+    points
 }
