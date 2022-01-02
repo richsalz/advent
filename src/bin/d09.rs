@@ -39,6 +39,8 @@ fn load(input: &str) -> Result<Matrix, Box<dyn Error>> {
     Ok(m)
 }
 
+//const OFFSETS: [(isize, isize); 4] = [(0, -1), (0, 1), (-1, 0), (1, 0)];
+
 fn findlows(m: &Matrix) -> Vec<Point> {
     let mut points: Vec<(usize, usize)> = Vec::new();
     let maxrows = m.len() - 1;
@@ -48,7 +50,8 @@ fn findlows(m: &Matrix) -> Vec<Point> {
         let bot: bool = row == maxrows;
         for col in 0..=maxcols {
             let cell = m[row][col];
-            if (!top && cell >= m[row - 1][col])
+            if (cell == 9
+                || !top && cell >= m[row - 1][col])
                 || (!bot && cell >= m[row + 1][col])
                 || (col != 0 && cell >= m[row][col - 1])
                 || (col != maxcols && cell >= m[row][col + 1])
