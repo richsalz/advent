@@ -74,8 +74,26 @@ fn part1(input: &str) -> Result<(), Box<dyn Error>> {
 
 // Find the size of the basin at point `p`  As we find neighbors in the basin,
 // set those cells to 9; they're ignored in subsequent scans.
-fn basinsize(_m: &mut Matrix, _p: Point) -> isize {
-    1
+fn basinsize(m: &mut Matrix, p: Point) -> isize {
+    m[p.0][p.1] = 9; // Don't let this one be re-counted.
+    let mut count = 1isize;
+    for drow in [-1isize, 1isize] {
+        let nrow = (p.0 as isize + drow) as usize;
+        if let Some(_) = m.get(nrow) {
+            if m[nrow][p.1] != 9 {
+                count += basinsize(m, (nrow, p.1));
+            }
+        }
+    }
+    for dcol in [-1isize, 1isize] {
+        let ncol = (p.1 as isize + dcol) as usize;
+        if let Some(_) = m[p.0].get(ncol) {
+            if m[p.0][ncol] != 9 {
+                count += basinsize(m, (p.0, ncol));
+            }
+        }
+    }
+    count
 }
 
 fn part2(input: &str) -> Result<(), Box<dyn Error>> {
@@ -83,8 +101,8 @@ fn part2(input: &str) -> Result<(), Box<dyn Error>> {
     let mut sizes: Vec<isize> = findlows(&m).iter().map(|(r,c)| basinsize(&mut m, (*r, *c))).collect();
     sizes.sort();
     sizes.reverse();
-    let sum: isize = sizes.iter().take(3).product();
-    println!("product = {}", sum);
+    let product: isize = sizes.iter().take(3).product();
+    println!("product = {}", product);
 
     Ok(())
 }
