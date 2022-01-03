@@ -39,8 +39,6 @@ fn load(input: &str) -> Result<Matrix, Box<dyn Error>> {
     Ok(m)
 }
 
-//const OFFSETS: [(isize, isize); 4] = [(0, -1), (0, 1), (-1, 0), (1, 0)];
-
 fn findlows(m: &Matrix) -> Vec<Point> {
     let mut points: Vec<(usize, usize)> = Vec::new();
     let maxrows = m.len() - 1;
@@ -72,24 +70,21 @@ fn part1(input: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn findbasin(_m: &Matrix, _p: Point) -> Vec<Point> {
-    // Start with a point, see if everone up/down/left/right is lower.
-    // Add those points to the array if not already there.
-    // If array changed, recurse.
-    [(1, 2)].to_vec()
+//const OFFSETS: [(isize, isize); 4] = [(0, -1), (0, 1), (-1, 0), (1, 0)];
+
+// Find the size of the basin at point `p`  As we find neighbors in the basin,
+// set those cells to 9; they're ignored in subsequent scans.
+fn basinsize(_m: &mut Matrix, _p: Point) -> isize {
+    1
 }
 
 fn part2(input: &str) -> Result<(), Box<dyn Error>> {
-    let m = load(input)?;
-    let points = findlows(&m);
-    let mut sizes: Vec<isize> = Vec::new();
-    for p in points {
-        sizes.push(findbasin(&m, p).len() as isize);
-    }
+    let mut m = load(input)?;
+    let mut sizes: Vec<isize> = findlows(&m).iter().map(|(r,c)| basinsize(&mut m, (*r, *c))).collect();
     sizes.sort();
     sizes.reverse();
-    let sum: isize = sizes[0..3].iter().sum();
-    println!("sum = {}", sum);
+    let sum: isize = sizes.iter().take(3).product();
+    println!("product = {}", sum);
 
     Ok(())
 }
