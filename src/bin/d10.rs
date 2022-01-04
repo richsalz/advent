@@ -10,19 +10,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     Ok(())
 }
+/*
 
-
-const matchandscors: Vec<(char, char, i32)> = [
+const matchandscors: [(char, char, i32)] = [
 ( '(', ')', 3 ),
 ( '[', ']', 57 ),
 ( '{', '}', 1107 ),
 ( '<', '>', 25137 ),
-];
+];*/
 
 fn part1(input: &str) -> Result<(), Box<dyn Error>> {
     let mut l = Lines::new(input)?;
     while l.more() {
-
+        let input = l.get().chars();
+        println!("{:?}", input);
     }
     Ok(())
 }
