@@ -48,8 +48,7 @@ fn findlows(m: &Matrix) -> Vec<Point> {
         let bot: bool = row == maxrows;
         for col in 0..=maxcols {
             let cell = m[row][col];
-            if (cell == 9
-                || !top && cell >= m[row - 1][col])
+            if (cell == 9 || !top && cell >= m[row - 1][col])
                 || (!bot && cell >= m[row + 1][col])
                 || (col != 0 && cell >= m[row][col - 1])
                 || (col != maxcols && cell >= m[row][col + 1])
@@ -98,7 +97,10 @@ fn basinsize(m: &mut Matrix, p: Point) -> isize {
 
 fn part2(input: &str) -> Result<(), Box<dyn Error>> {
     let mut m = load(input)?;
-    let mut sizes: Vec<isize> = findlows(&m).iter().map(|(r,c)| basinsize(&mut m, (*r, *c))).collect();
+    let mut sizes: Vec<isize> = findlows(&m)
+        .iter()
+        .map(|(r, c)| basinsize(&mut m, (*r, *c)))
+        .collect();
     sizes.sort();
     sizes.reverse();
     let product: isize = sizes.iter().take(3).product();
