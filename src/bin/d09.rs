@@ -21,18 +21,7 @@ fn load(input: &str) -> Result<Matrix, Box<dyn Error>> {
         let row = l
             .get()
             .chars()
-            .map(|c| match c {
-                '1' => 1,
-                '2' => 2,
-                '3' => 3,
-                '4' => 4,
-                '5' => 5,
-                '6' => 6,
-                '7' => 7,
-                '8' => 8,
-                '9' => 9,
-                _ => 0,
-            })
+            .map(|c| c.to_digit(10).unwrap() as u8)
             .collect();
         m.push(row);
     }
