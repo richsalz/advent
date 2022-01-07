@@ -32,15 +32,16 @@ fn findlows(m: &Matrix) -> Vec<Point> {
     let mut points: Vec<(usize, usize)> = Vec::new();
     let maxrows = m.len() - 1;
     let maxcols = m[0].len() - 1;
-    for row in 0..=maxrows {
+    for (row, rref) in m.iter().enumerate() {
+        //0..=maxrows {
         let top: bool = row == 0;
         let bot: bool = row == maxrows;
         for col in 0..=maxcols {
-            let cell = m[row][col];
+            let cell = rref[col];
             if (cell == 9 || !top && cell >= m[row - 1][col])
                 || (!bot && cell >= m[row + 1][col])
-                || (col != 0 && cell >= m[row][col - 1])
-                || (col != maxcols && cell >= m[row][col + 1])
+                || (col != 0 && cell >= rref[col - 1])
+                || (col != maxcols && cell >= rref[col + 1])
             {
                 continue;
             }
@@ -67,18 +68,14 @@ fn basinsize(m: &mut Matrix, p: Point) -> isize {
     let mut count = 1isize;
     for drow in [-1isize, 1isize] {
         let nrow = (p.0 as isize + drow) as usize;
-        if let Some(_) = m.get(nrow) {
-            if m[nrow][p.1] != 9 {
-                count += basinsize(m, (nrow, p.1));
-            }
+        if m.get(nrow).is_some() && m[nrow][p.1] != 9 {
+            count += basinsize(m, (nrow, p.1));
         }
     }
     for dcol in [-1isize, 1isize] {
         let ncol = (p.1 as isize + dcol) as usize;
-        if let Some(_) = m[p.0].get(ncol) {
-            if m[p.0][ncol] != 9 {
-                count += basinsize(m, (p.0, ncol));
-            }
+        if m[p.0].get(ncol).is_some() && m[p.0][ncol] != 9 {
+            count += basinsize(m, (p.0, ncol));
         }
     }
     count
@@ -90,7 +87,7 @@ fn part2(input: &str) -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|(r, c)| basinsize(&mut m, (*r, *c)))
         .collect();
-    sizes.sort();
+    sizes.sort_unstable();
     sizes.reverse();
     let product: isize = sizes.iter().take(3).product();
     println!("product = {}", product);

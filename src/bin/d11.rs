@@ -13,19 +13,36 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn load(input: &str) -> Result<Map, Box<dyn Error>>
-{
+fn load(input: &str) -> Result<Map, Box<dyn Error>> {
     let mut l = Lines::new(input)?;
-    let mut squids:Map = Vec::with_capacity(10);
+    let mut squids: Map = Vec::with_capacity(10);
     while l.more() {
-        squids.push(l.get().chars().map(|c| c.to_digit(10).unwrap() as i8).collect());
+        squids.push(
+            l.get()
+                .chars()
+                .map(|c| c.to_digit(10).unwrap() as i8)
+                .collect(),
+        );
     }
-    return Ok(squids);
+    Ok(squids)
 }
 
+const OFFSETS: [(isize, isize); 8] = [
+    (-1, -1),
+    (-1, 0),
+    (-1, 1),
+    (0, -1),
+    (0, 1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+];
 fn part1(input: &str) -> Result<(), Box<dyn Error>> {
-    let  squids = load(input)?;
+    let squids = load(input)?;
     println!("{:#?}", squids);
+    for (dr, dc) in OFFSETS {
+        println!("{} {}", dr, dc);
+    }
     Ok(())
 }
 

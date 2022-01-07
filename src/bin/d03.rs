@@ -26,7 +26,7 @@ fn readit(name: &str) -> Result<(Vec<usize>, usize), Box<dyn Error>> {
 
 /// Count the numbers of 1's and 0's at bit position `bit` in each element
 /// of the vector `values`
-fn count(bit: usize, values: &Vec<usize>) -> (usize, usize) {
+fn count(bit: usize, values: &[usize]) -> (usize, usize) {
     let (mut ones, mut zeros) = (0, 0);
     for v in values {
         if *v & bit == bit {
@@ -61,12 +61,8 @@ fn part1(name: &str) -> Result<(), Box<dyn Error>> {
 
 /// Filter the `values` (each of `length` bits) looking at each bit in turn.
 /// Remove those that don't match the `result` value.
-fn filter(
-    values: &Vec<usize>,
-    length: usize,
-    result: &dyn Fn(usize, usize, usize) -> usize,
-) -> usize {
-    let mut values = values.clone();
+fn filter(values: &[usize], length: usize, result: &dyn Fn(usize, usize, usize) -> usize) -> usize {
+    let mut values: Vec<usize> = values.to_vec();
     for b in (0..length).rev() {
         if values.len() == 1 {
             break;

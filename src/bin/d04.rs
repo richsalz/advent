@@ -34,17 +34,17 @@ impl Board {
     }
 
     /// Is this board a winner?
-    pub fn won(self: &Self) -> bool {
+    pub fn won(&self) -> bool {
         self.winner
     }
 
     /// Have all of the squares specified by the five squares
     /// `i0` through `i4` been called?
-    fn five(self: &Self, i0: usize, i1: usize, i2: usize, i3: usize, i4: usize) -> bool {
+    fn five(&self, i0: usize, i1: usize, i2: usize, i3: usize, i4: usize) -> bool {
         self.called[i0] && self.called[i1] && self.called[i2] && self.called[i3] && self.called[i4]
     }
 
-    pub fn score(self: &Self) -> i32 {
+    pub fn score(&self) -> i32 {
         (0..25)
             .map(|i| {
                 if self.called[i] {
@@ -59,7 +59,7 @@ impl Board {
     /// See if we won. Check all rows then all columns, then the diagonals.
     /// Yes, I wrote a 5x5 square on paper to figure out what the diagonal
     /// values should be.  
-    pub fn check(self: &mut Self) -> bool {
+    pub fn check(&mut self) -> bool {
         if self.winner {
             return true;
         }
@@ -88,7 +88,7 @@ impl Board {
     /// becomes a vector of all indices where the number matches.
     /// Then use that to check for only one hit, and mark it as called.
     /// Return `true` if this was a winning move, else `false`.
-    pub fn call(self: &mut Self, number: u8) -> bool {
+    pub fn call(&mut self, number: u8) -> bool {
         let hits: Vec<usize> = self
             .values
             .iter()
@@ -138,9 +138,9 @@ fn setup(name: &str) -> Result<(Vec<Board>, Vec<u8>), Box<dyn Error>> {
 fn part1(name: &str) -> Result<(), Box<dyn Error>> {
     let (mut boards, moves) = setup(name)?;
     for m in moves {
-        for i in 0..boards.len() {
-            if boards[i].call(m) {
-                let score = boards[i].score();
+        for b in &mut boards {
+            if b.call(m) {
+                let score = b.score();
                 println!("{} * score {} = {}", m, score, score * (m as i32));
                 return Ok(());
             }
@@ -155,8 +155,8 @@ fn part2(name: &str) -> Result<(), Box<dyn Error>> {
     let (mut boards, moves) = setup(name)?;
     let mut last = (0, 0);
     for m in moves {
-        for i in 0..boards.len() {
-            if !boards[i].won() && boards[i].call(m) {
+        for (i, b) in boards.iter_mut().enumerate() {
+            if !b.won() && b.call(m) {
                 last = (i, m);
             }
         }

@@ -11,7 +11,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn parse(line: &str) -> Result<(Vec<&str>, Vec<&str>), Box<dyn Error>> {
+type Wordlist<'a> = Vec<&'a str>;
+
+fn parse(line: &str) -> Result<(Wordlist, Wordlist), Box<dyn Error>> {
     let mut s = line.split('|');
     let inp: Vec<&str> = s.next().unwrap().trim().split(' ').collect();
     let out: Vec<&str> = s.next().unwrap().trim().split(' ').collect();
@@ -24,7 +26,7 @@ fn part1(input: &str) -> Result<(), Box<dyn Error>> {
     let segments = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6];
     let uniques = [segments[1], segments[4], segments[7], segments[8]];
 
-    let mut l = Lines::new(&input)?;
+    let mut l = Lines::new(input)?;
     let mut count = 0;
     while l.more() {
         let (_inp, out) = parse(l.get())?;
@@ -36,7 +38,7 @@ fn part1(input: &str) -> Result<(), Box<dyn Error>> {
 }
 
 fn part2(input: &str) -> Result<(), Box<dyn Error>> {
-    let mut l = Lines::new(&input)?;
+    let mut l = Lines::new(input)?;
     let mut total = 0;
     while l.more() {
         let (inp, out) = parse(l.get())?;

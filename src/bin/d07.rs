@@ -29,7 +29,7 @@ fn common(input: &str, cost: &dyn Fn(i32) -> i32) -> Result<(), Box<dyn Error>> 
         .split(',')
         .map(|s| i32::from_str(s).unwrap())
         .collect();
-    crabs.sort();
+    crabs.sort_unstable();
     let lowest = crabs[0];
     let highest = crabs[crabs.len() - 1];
     let mut pos = lowest;

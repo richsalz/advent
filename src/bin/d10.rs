@@ -15,10 +15,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// bracket we expect to see, and the cost if it doesn't match.
 fn match_closer(c: char) -> (char, usize) {
     match c {
-        ')' => return ('(', 3),
-        ']' => return ('[', 57),
-        '}' => return ('{', 1197),
-        '>' => return ('<', 25137),
+        ')' => ('(', 3),
+        ']' => ('[', 57),
+        '}' => ('{', 1197),
+        '>' => ('<', 25137),
         _ => panic!("unrecognized input character"),
     }
 }
@@ -41,7 +41,7 @@ fn corrupted(line: &str) -> Option<usize> {
             _ => panic!("bad char in input"),
         }
     }
-    return None;
+    None
 }
 
 fn part1(input: &str) -> Result<(), Box<dyn Error>> {
@@ -71,7 +71,6 @@ fn part2(input: &str) -> Result<(), Box<dyn Error>> {
                 '(' | '[' | '{' | '<' => stack.push(c),
                 _ => {
                     stack.pop();
-                    ()
                 }
             };
         }
@@ -91,7 +90,7 @@ fn part2(input: &str) -> Result<(), Box<dyn Error>> {
         }
         scores.push(sum);
     }
-    scores.sort();
+    scores.sort_unstable();
     println!("score = {}", scores[scores.len() / 2]);
     Ok(())
 }

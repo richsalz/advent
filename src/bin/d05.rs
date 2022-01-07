@@ -1,4 +1,5 @@
 use advent::utils::Lines;
+use std::cmp::Ordering;
 use std::env;
 use std::error::Error;
 
@@ -31,43 +32,46 @@ fn common(input: &str, diagonals: bool) -> Result<(), Box<dyn Error>> {
             }
             grid[y1][x1] += 1;
             while x1 != x2 && y1 != y2 {
-                if x1 < x2 {
-                    x1 += 1;
-                } else if x1 > x2 {
-                    x1 -= 1;
+                match x1.cmp(&x2) {
+                    Ordering::Less => x1 += 1,
+                    Ordering::Greater => x1 -= 1,
+                    _ => (),
                 };
-                if y1 < y2 {
-                    y1 += 1;
-                } else if y1 > y2 {
-                    y1 -= 1;
+                match y1.cmp(&y2) {
+                    Ordering::Less => y1 += 1,
+                    Ordering::Greater => y1 -= 1,
+                    _ => (),
                 };
                 grid[y1][x1] += 1;
             }
-            continue;
         }
         if x1 == x2 {
-            if y1 == y2 {
-                grid[y1][x1] += 1;
-                continue;
-            }
-            if y1 < y2 {
-                for y in y1..=y2 {
-                    grid[y][x1] += 1;
+            match y1.cmp(&y2) {
+                Ordering::Equal => grid[y1][x1] += 1,
+                Ordering::Less => {
+                    for row in grid.iter_mut().take(y2 + 1).skip(y1) {
+                        row[x1] += 1;
+                    }
                 }
-            } else {
-                for y in y2..=y1 {
-                    grid[y][x1] += 1;
+                Ordering::Greater => {
+                    for row in grid.iter_mut().take(y1 + 1).skip(y2) {
+                        row[x1] += 1;
+                    }
                 }
-            }
+            };
         } else {
-            if x1 < x2 {
-                for x in x1..=x2 {
-                    grid[y1][x] += 1;
+            match x1.cmp(&x2) {
+                Ordering::Less => {
+                    for x in x1..=x2 {
+                        grid[y1][x] += 1;
+                    }
                 }
-            } else {
-                for x in x2..=x1 {
-                    grid[y1][x] += 1;
+                Ordering::Greater => {
+                    for x in x2..=x1 {
+                        grid[y1][x] += 1;
+                    }
                 }
+                _ => (),
             }
         }
     }
