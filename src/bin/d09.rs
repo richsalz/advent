@@ -28,6 +28,7 @@ fn load(input: &str) -> Result<Matrix, Box<dyn Error>> {
     Ok(m)
 }
 
+#[allow(clippy::ptr_arg)]  // Sunsure if I should do this.
 fn findlows(m: &Matrix) -> Vec<Point> {
     let mut points: Vec<(usize, usize)> = Vec::new();
     let maxrows = m.len() - 1;
