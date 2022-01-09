@@ -29,6 +29,12 @@ pub mod utils {
         pub fn get(&self) -> &str {
             &self.line
         }
+
+        // Get next line or panic.
+        pub fn next(&mut self) -> &str {
+            if !self.more() { panic!("Unexpected EOF"); }
+            self.get()
+        }
     }
 
     /// Portably remove newline character(s) from end of string `s`

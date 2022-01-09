@@ -22,13 +22,9 @@ impl Board {
             called: vec![false; 25],
             winner: false,
         };
-        let mut i: usize = 0;
-        for _row in 0..5 {
-            l.more();
-            for n in l.get().split_ascii_whitespace() {
-                b.values[i] = u8::from_str(n)?;
-                i += 1;
-            }
+        for row in 0..5 {
+            b.values.splice((row*5)..(5+row*5),
+                l.next().split_ascii_whitespace().map(|n| u8::from_str(n).unwrap()));
         }
         Ok(b)
     }
@@ -45,14 +41,9 @@ impl Board {
     }
 
     pub fn score(&self) -> i32 {
-        (0..25)
-            .map(|i| {
-                if self.called[i] {
-                    0i32
-                } else {
-                    self.values[i] as i32
-                }
-            })
+        (0usize..25usize)
+            .filter(|i| !self.called[*i])
+            .map(|i| self.values[i] as i32)
             .sum()
     }
 
