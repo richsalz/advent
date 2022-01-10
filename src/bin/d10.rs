@@ -11,28 +11,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-/// Given the character `c` which is a closing bracket, return the opening
-/// bracket we expect to see, and the cost if it doesn't match.
-fn match_closer(c: char) -> (char, usize) {
-    match c {
-        ')' => ('(', 3),
-        ']' => ('[', 57),
-        '}' => ('{', 1197),
-        '>' => ('<', 25137),
-        _ => panic!("unrecognized input character"),
-    }
-}
-
 fn corrupted(line: &str) -> Option<usize> {
     let mut stack: Vec<char> = Vec::new();
     for c in line.chars() {
         match c {
-            '(' | '[' | '{' | '<' => {
-                stack.push(c);
-                continue;
-            }
+            '(' | '[' | '{' | '<' => stack.push(c),
             ')' | ']' | '}' | '>' => {
-                let (opener, value) = match_closer(c);
+                let (opener, value) = match c {
+                    ')' => ('(', 3),
+                    ']' => ('[', 57),
+                    '}' => ('{', 1197),
+                    '>' => ('<', 25137),
+                    _ => panic!("unrecognized input character"),
+                };
                 let stacktop = stack.pop();
                 if stacktop.is_none() || stacktop.unwrap() != opener {
                     return Some(value);
