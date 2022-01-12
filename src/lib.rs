@@ -32,7 +32,9 @@ pub mod utils {
 
         // Get next line or panic.
         pub fn next(&mut self) -> &str {
-            if !self.more() { panic!("Unexpected EOF"); }
+            if !self.more() {
+                panic!("Unexpected EOF");
+            }
             self.get()
         }
     }

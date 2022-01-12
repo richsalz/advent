@@ -23,8 +23,12 @@ impl Board {
             winner: false,
         };
         for row in 0..5 {
-            b.values.splice((row*5)..(5+row*5),
-                l.next().split_ascii_whitespace().map(|n| u8::from_str(n).unwrap()));
+            b.values.splice(
+                (row * 5)..(5 + row * 5),
+                l.next()
+                    .split_ascii_whitespace()
+                    .map(|n| u8::from_str(n).unwrap()),
+            );
         }
         Ok(b)
     }
